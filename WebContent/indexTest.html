@@ -1,0 +1,64 @@
+<!doctype html>
+<html data-ng-app>
+<head>
+<meta charset="utf-8">
+<title>onehungrymind</title>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js"></script>
+<style>
+.boundingBox {
+width: 200px;height: 200px;
+background-color: #333333;margin:20px;
+}
+.circle {
+display:block;position:absolute;
+height: 20px;width: 20px;
+background-color: #999;-moz-border-radius: 15px;
+-webkit-border-radius: 15px;
+border-radius: 15px;
+</style>
+<script>
+var module = angular.module('animateApp', []);
+function animator(vorm, $timeout) { 
+	(function tick() {
+		//we berekenen steeds nieuwe x en y
+		var maxX = 200, maxY = 200;
+		var now = new Date().getTime();
+		var elapsed = (vorm.timestamp || now) - now;
+		vorm.timestamp = now;
+		//hoe meer tijd er verlopen is sinds vorige now 
+		//(zit in vorm.timestamp)
+		//hoe meer we verplaatsen
+		vorm.x += elapsed * vorm.velX / 1000;
+		if (vorm.x > maxX) {
+			vorm.x = 2 * maxX - vorm.x;
+			vorm.velX *= -1;
+		}
+		if (vorm.x < 30) {
+			vorm.x = 30;vorm.velX *= -1;
+		}
+			// tick is een zogenaamde closure: hij heeft 
+			// toegang tot 'vorm'
+			$timeout(tick, 30);
+	})();
+}
+function AnimateCtrl($scope, $timeout) {
+	$scope.vorm = {
+			color: '#FFFFFF', x: 100, y: 100, velX: 100, velY: 0
+	}
+	animator($scope.vorm, $timeout);
+}
+</script>
+</head>
+<body data-ng-app="animateApp">
+	<div data-ng-app="animateApp" data-ng-controller="AnimateCtrl">
+		<div class="boundingBox">
+			<div class="circle" data-ng-style="{ 'backgroundColor':vorm.color,'left':vorm.x+'px', 'top':vorm.y+'px' }">
+			</div>
+			<svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+			<circle cx="{{vorm.x}}" cy="{{vorm.y}}" r="20" stroke="yellow"
+			stroke-width="2" fill="red"/>
+			</svg>
+		</div>
+	</div>
+</body>
+</html>
